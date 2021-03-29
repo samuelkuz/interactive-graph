@@ -1,0 +1,39 @@
+.map-wrapper {
+    margin: auto;
+
+    .map {
+        margin: auto;
+        border: 2px solid black;
+        overflow: hidden;
+        position: relative;
+        
+        // height: 500px;
+        // width: 500px;
+    }
+
+    .add-node {
+        background-color: #c5c5c5;
+        border-radius: 15px;
+        cursor: pointer;
+        line-height: 25px;
+        margin: 15px auto;
+
+        height: 25px;
+        width: 90px;
+
+        &:hover {
+            background-color: #dfdddd;
+        }
+    }
+
+    .add-node-popup {
+        background-color: #e8eaed;
+        border-radius: 10px;
+        line-height: 30px;
+        position: fixed;
+        text-align: center;
+
+        height: 30px;
+        width: 175px;
+    }
+}

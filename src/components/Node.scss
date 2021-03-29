@@ -1,0 +1,12 @@
+.node-wrapper {
+    border: 2px black solid;
+    background-color: #c5c5c5;
+    position: absolute;
+    text-align: center;
+    
+    .node-id {
+        font-size: 14px;
+        margin: auto;
+        text-align: center;
+    }
+}
