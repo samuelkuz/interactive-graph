@@ -1,11 +1,11 @@
-import GraphMap from "./components/GraphMap";
+import GraphMapUpdated from "./components/GraphMapUpdated";
 
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <GraphMap height={600} width={600}/>
+      <GraphMapUpdated height={500} width={500}/>
     </div>
   );
 }
