@@ -4,15 +4,15 @@ export interface Point {
 };
 
 export interface NodeData {
-    id: string,
+    id: number,
+    name: string,
     point: Point,
     size: number,
-    edges: string[],
 };
 
 export interface EdgeData {
-    srcId: string,
-    destId: string,
+    srcId: number,
+    destId: number,
     srcPoint: Point,
     destPoint: Point,
     weight: number,

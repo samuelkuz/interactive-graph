@@ -5,7 +5,7 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <GraphMapUpdated height={500} width={500}/>
+      <GraphMapUpdated height={1000} width={1000}/>
     </div>
   );
 }

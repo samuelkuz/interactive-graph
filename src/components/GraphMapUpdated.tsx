@@ -3,9 +3,9 @@ import React, { useState, useEffect, useRef, CSSProperties } from "react";
 import Edge from "./Edge";
 import NodeUpdated from "./NodeUpdated";
 import { EdgeData, NodeData, Point } from "../types/types";
+import dijkstra from "../algorithms/Dijkstra";
 
 import "./GraphMapUpdated.scss";
-import { stringify } from "node:querystring";
 
 interface GraphMapProps {
     height: number,
@@ -18,13 +18,17 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
     const [editNodePoint, setEditNodePoint] = useState<Point>({x: 0, y: 0});
     const [edgeCounter, setEdgeCounter] = useState<number>(0);
     const [edgeMap, setEdgeMap] = useState<Map<string, EdgeData>>(new Map<string, EdgeData>());
-    const [nodeMap, setNodeMap] = useState<Map<string, NodeData>>(new Map<string, NodeData>());
-    const [selectedNode, setSelectedNode] = useState<string>("");
+    const [nodeMap, setNodeMap] = useState<Map<number, NodeData>>(new Map<number, NodeData>());
+    const [selectedNode, setSelectedNode] = useState<number>(0);
     const [showAddNode, _setShowAddNode] = useState<boolean>(false);
     const [showEditNode, _setShowEditNode] = useState<boolean>(false);
     const [svgAddNodePoint, setSvgAddNodePoint] = useState<Point>({x: 0, y: 0});
     const [viewPt, _setViewPt] = useState<Point>({x: 0, y: 0});
     const [zoom, _setZoom] = useState<number>(150);
+
+    // NodeMap exists
+    // EdgeMap exists
+    // Need to create djikstra function to handle this
 
     useEffect(() => {
         window.addEventListener("keydown", handleMovement);
@@ -113,7 +117,7 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
     const buildNodes = () => {
         const nodeObjs: JSX.Element[] = [];
 
-        nodeMap.forEach((val: NodeData, key: string) => {
+        nodeMap.forEach((val: NodeData, key: number) => {
             // Eventually calculate if it should be rendered or not
             nodeObjs.push(<NodeUpdated key={Math.random() * 10000} data={val} color={"#919191"} editCallback={handleEditNode}/>);
         });
@@ -141,33 +145,33 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
 
     const handleAddNode = () => {
         const nextId: number = nodeCounter + 1;
-        const nextNodeId: string = `${nextId}`;
+        const nextNodeName: string = `${nextId}`;
 
         const newNode: NodeData = {
-            id: nextNodeId,
+            id: nextId,
+            name: nextNodeName,
             point: {
                 x: svgAddNodePoint.x,
                 y: svgAddNodePoint.y
             },
             size: 10,
-            edges: [],
         };
 
-        nodeMap.set(nextNodeId, newNode);
+        nodeMap.set(nextId, newNode);
         setNodeCounter(nextId);
         setShowAddNode(false);
     };
 
     const handleAddEdge = () => {
         if (addEdgeInputRef.current !== null && addEdgeInputRef.current.value.length > 0) {
-            const srcId: string = selectedNode;
-            const destId: string = addEdgeInputRef.current.value;
+            const srcId: number = selectedNode;
+            const destId: number = parseInt(addEdgeInputRef.current.value);
             const edgeKey: string = `${srcId}:${destId}`;
 
             if (!edgeMap.has(edgeKey) && !(srcId === destId)) {
                 const srcNode = nodeMap.get(srcId);
                 const destNode = nodeMap.get(destId);
-                if (srcNode != undefined && destNode != undefined) {
+                if (srcNode !== undefined && destNode !== undefined) {
                     const srcPoint: Point = srcNode.point;
                     const destPoint: Point = destNode.point;
                     const weight = Math.sqrt(Math.pow(srcPoint.x - destPoint.x, 2) + Math.pow(srcPoint.y - destPoint.y, 2));
@@ -229,7 +233,7 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
         setShowEditNode(false);
     };
 
-    const handleEditNode = (offset: Point, id: string) => {
+    const handleEditNode = (offset: Point, id: number) => {
         setShowAddNode(false);
         setSelectedNode(id);
         setEditNodePoint(offset);
@@ -268,14 +272,19 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
         }
     };
 
+    // temporarily do not use
     const mapStyle: CSSProperties = {
         height: height,
         width: width,
     };
+
+    const handleDijkstra = () => {
+        dijkstra(selectedNode, nodeMap, edgeMap);
+    };
     
     return (
         <div className="map-wrapper">
-            <svg className="map" style={mapStyle} viewBox={`${viewPt.x} ${viewPt.y} ${zoom} ${zoom}`} ref={svgRef}>
+            <svg className="map" viewBox={`${viewPt.x} ${viewPt.y} ${zoom} ${zoom}`} ref={svgRef}>
                 {buildEdges()}
                 {buildNodes()}
             </svg>
@@ -285,6 +294,7 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
             {showEditNode &&
                 buildEditNode()
             }
+            <div className="test" onClick={handleDijkstra}>DJIKSTRA</div>
         </div>
     );
 };

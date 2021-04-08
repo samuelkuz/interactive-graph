@@ -1,5 +1,7 @@
 .map-wrapper {
     margin: auto;
+    height: 40%;
+    width: 40%;
 
     .map {
         margin: auto;
@@ -85,5 +87,17 @@
                 color: #d6d6d6;
             }
         }
+    }
+
+    .test {
+        background-color: #c5c5c5;
+        border-radius: 15px;
+        cursor: pointer;
+        font-weight: 500;
+        margin: auto;
+        position: absolute;
+
+        height: 110px;
+        width: 150px;
     }
 }

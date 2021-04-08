@@ -7,7 +7,7 @@ import "./NodeUpdated.scss";
 interface NodeProps {
     data: NodeData;
     color: string;
-    editCallback: (offset: Point, id: string) => void;
+    editCallback: (offset: Point, id: number) => void;
 };
 
 
