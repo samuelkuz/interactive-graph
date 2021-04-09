@@ -5,6 +5,7 @@ export interface Point {
 
 export interface NodeData {
     id: number,
+    color: string,
     name: string,
     point: Point,
     size: number,
@@ -17,3 +18,10 @@ export interface EdgeData {
     destPoint: Point,
     weight: number,
 };
+
+export interface GraphAnimationData {
+    id: number,
+    type: string,
+    color: string,
+    weight: number,
+}

@@ -34,7 +34,7 @@ const NodeUpdated: React.FC<NodeProps> = ({data, color, editCallback}) => {
     return (
         <React.Fragment>
             <circle className="node-circle" ref={circleRef} cx={data.point.x} cy={data.point.y} r={data.size} style={tempStyle} onClick={() => handleShowEdit()}/>
-            <text className="node-text" x={data.point.x} y={data.point.y} dy={data.size/2} onClick={() => handleShowEdit()}>{data.id}</text>
+            <text className="node-text" x={data.point.x} y={data.point.y} dy={data.size/2} onClick={() => handleShowEdit()}>{data.name}</text>
         </React.Fragment>
     );
 }

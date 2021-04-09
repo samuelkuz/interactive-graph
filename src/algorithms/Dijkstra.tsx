@@ -1,4 +1,4 @@
-import { EdgeData, NodeData} from "../types/types";
+import { GraphAnimationData, EdgeData, NodeData} from "../types/types";
 
 interface GraphNode {
     id: number,
@@ -93,7 +93,8 @@ const priorityQueue = (): PriorityQueue => {
     };
 }
 
-const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): number => {
+const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): GraphAnimationData[] => {
+    const animations: GraphAnimationData[] = [];
     const graphNodes: Map<number, GraphNode> = new Map<number, GraphNode>();
     const distMap: Map<number, number> = new Map<number, number>();
     const visited: Set<number> = new Set<number>();
@@ -135,13 +136,17 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
     distMap.set(srcId, 0);
     prioQ.insert({id: srcId, distance: 0});
 
-    let count = 0;
-
     while (!prioQ.isEmpty()) {
         const temp: Distance | null = prioQ.pop();
         
         if (temp !== null) {
             visited.add(temp.id);
+            animations.push({
+                id: temp.id,
+                type: "color",
+                color: "#000",
+                weight: temp.distance,
+            });
             const currNode: GraphNode | undefined = graphNodes.get(temp.id);
             const currWeight: number | undefined = distMap.get(temp.id);
 
@@ -166,10 +171,9 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
         }
     }
     
-    console.log("COUNT: ", count);
     console.log(distMap);
     
-    return 1;
+    return animations;
 };
 
 export default dijkstra;
