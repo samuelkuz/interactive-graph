@@ -47,13 +47,13 @@ const Edge: React.FC<EdgeProps> = ({data, color}) => {
         test.x = testX + data.destPoint.x;
         test.y = testY + data.destPoint.y;
 
-        const theta2 = (degrees - 15) * (Math.PI / 180);
-        const theta3 = (degrees + 15) * (Math.PI / 180);
+        const theta2 = (degrees - 10) * (Math.PI / 180);
+        const theta3 = (degrees + 10) * (Math.PI / 180);
         
-        const testX2 = 16 * Math.cos(theta2);
-        const testY2 = 16 * Math.sin(theta2);
-        const testX3 = 16 * Math.cos(theta3);
-        const testY3 = 16 * Math.sin(theta3);
+        const testX2 = 15 * Math.cos(theta2);
+        const testY2 = 15 * Math.sin(theta2);
+        const testX3 = 15 * Math.cos(theta3);
+        const testY3 = 15 * Math.sin(theta3);
 
         test2.x = testX2 + data.destPoint.x;
         test2.y = testY2 + data.destPoint.y;

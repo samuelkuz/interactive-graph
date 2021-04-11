@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, CSSProperties } from "react";
 
 import Edge from "./Edge";
 import NodeUpdated from "./NodeUpdated";
+import GraphAlgorithmButton from "./GraphAlgorithmButton";
 import { GraphAnimationData, EdgeData, NodeData, Point } from "../types/types";
 import dijkstra from "../algorithms/Dijkstra";
 
@@ -15,12 +16,13 @@ interface GraphMapProps {
 const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     const [addNodePoint, setAddNodePoint] = useState<Point>({x: 0, y: 0});
     const [animations, setAnimations] = useState<GraphAnimationData[]>([]);
-    const [animationSpeed, setAnimationSpeed] = useState(300);
-    const [nodeCounter, setNodeCounter] = useState<number>(0);
-    const [editNodePoint, setEditNodePoint] = useState<Point>({x: 0, y: 0});
+    const [animationSpeed, setAnimationSpeed] = useState(200);
     const [edgeCounter, setEdgeCounter] = useState<number>(0);
     const [edgeMap, setEdgeMap] = useState<Map<string, EdgeData>>(new Map<string, EdgeData>());
+    const [editNodePoint, setEditNodePoint] = useState<Point>({x: 0, y: 0});
+    const [nodeCounter, setNodeCounter] = useState<number>(0);
     const [nodeMap, setNodeMap] = useState<Map<number, NodeData>>(new Map<number, NodeData>());
+    const [renderCount, setRenderCount] = useState<number>(0);
     const [selectedNode, setSelectedNode] = useState<number>(0);
     const [showAddNode, _setShowAddNode] = useState<boolean>(false);
     const [showEditNode, _setShowEditNode] = useState<boolean>(false);
@@ -46,8 +48,8 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         edgeMap.set("4:6", {srcId: 4, srcPoint: {x: 100, y: 40}, destId: 6, destPoint: {x: 80, y: 75}, weight: 40.311288741492746});
         edgeMap.set("6:5", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 5, destPoint: {x: 40, y: 100}, weight: 47.16990566028302});
         edgeMap.set("6:7", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 7, destPoint: {x: 90, y: 100}, weight: 26.92582403567252});
-        setEdgeCounter(7);
-        setNodeCounter(8);
+        setEdgeCounter(6);
+        setNodeCounter(7);
 
         return function cleanup() {
             window.removeEventListener("keydown", handleMovement);
@@ -66,14 +68,28 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                     setTimeout(() => {
                         const node = nodeMap.get(animation.id);
                         if (node === undefined) return;
-                        // console.log(node);
                         node.color = animation.color;
-                        node.name = animation.weight.toString();
+                        // node.name = animation.weight.toString();
                         setAnimations(tempAnimations);
                     }, animationSpeed);
                     break;
                 case "name":
                     // Don't really need a case for DAG visualization
+                    setTimeout(() => {
+                        const node = nodeMap.get(animation.id);
+                        if (node === undefined) return;
+                        node.name = animation.weight.toString();
+                        setAnimations(tempAnimations);
+                    }, animationSpeed);
+                    break;
+                case "all":
+                    setTimeout(() => {
+                        const node = nodeMap.get(animation.id);
+                        if (node === undefined) return;
+                        node.color = animation.color;
+                        node.name = animation.weight.toString();
+                        setAnimations(tempAnimations);
+                    }, animationSpeed);
                     break;
             }
         }
@@ -149,6 +165,16 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         });
 
         return nodeObjs;
+    };
+
+    const buildSettings = () => {
+        return (
+            <div className="algorithm-selector-container">
+                <GraphAlgorithmButton algorithmCallback={handleDijkstra}/>
+                <div className="algorithm-selector" onClick={() => handleReset()}>
+                    Reset to IDs
+                </div>
+            </div>);
     };
 
     const calculateAddNodeStyle = () => {
@@ -243,6 +269,8 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                 } else {
                     setShowAddNode(false);
                 }
+            } else {
+                setShowAddNode(false);
             }
         }
     };
@@ -305,13 +333,22 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         width: width,
     };
 
-    const handleDijkstra = () => {
-        const tempAnimations = dijkstra(selectedNode, nodeMap, edgeMap);
+    const handleDijkstra = (srcId: number) => {
+        const tempAnimations = dijkstra(srcId, nodeMap, edgeMap);
         setAnimations(tempAnimations);
+    };
+
+    const handleReset = () => {
+        nodeMap.forEach((val: NodeData, key: number) => {
+            val.color = "#919191";
+            val.name = val.id.toString();
+        });
+        setRenderCount(renderCount + 1);
     };
     
     return (
         <div className="map-wrapper">
+            { buildSettings() }
             <svg className="map" viewBox={`${viewPt.x} ${viewPt.y} ${zoom} ${zoom}`} ref={svgRef}>
                 {buildEdges()}
                 {buildNodes()}
@@ -322,7 +359,6 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
             {showEditNode &&
                 buildEditNode()
             }
-            <div className="test" onClick={handleDijkstra}>DJIKSTRA</div>
         </div>
     );
 };

@@ -144,7 +144,7 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
 
             animations.push({
                 id: temp.id,
-                type: "color",
+                type: "all",
                 color: "#e4e4e4",
                 weight: Math.floor((currWeight !== undefined) ? currWeight : temp.distance),
             });
@@ -161,7 +161,7 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
                             distMap.set(destId, nextPossibleWeight);
                             animations.push({
                                 id: destId,
-                                type: "color",
+                                type: "all",
                                 color: "#7c94e4",
                                 weight: Math.floor(nextPossibleWeight),
                             });
