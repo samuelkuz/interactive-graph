@@ -31,10 +31,36 @@ const NodeUpdated: React.FC<NodeProps> = ({data, color, editCallback}) => {
         fill: color,
     };
 
+    const calculateTextStyle = () => {
+        let tempFontSize = "14px";
+        if (parseInt(data.name) > 99) {
+            tempFontSize = "10px";
+        }
+        if (parseInt(data.name) > 999) {
+            tempFontSize = "8px";
+        }
+
+        return {
+            fontSize: tempFontSize,
+        }
+    };
+
+    const calculateDy = () => {
+        let tempDy = 2;
+        if (parseInt(data.name) > 99) {
+            tempDy = 3;
+        }
+        if (parseInt(data.name) > 999) {
+            tempDy = 4;
+        }
+        
+        return tempDy;
+    };
+
     return (
         <React.Fragment>
             <circle className="node-circle" ref={circleRef} cx={data.point.x} cy={data.point.y} r={data.size} style={tempStyle} onClick={() => handleShowEdit()}/>
-            <text className="node-text" x={data.point.x} y={data.point.y} dy={data.size/2} onClick={() => handleShowEdit()}>{data.name}</text>
+            <text className="node-text" x={data.point.x} y={data.point.y} dy={data.size/calculateDy()} style={calculateTextStyle()} onClick={() => handleShowEdit()}>{data.name}</text>
         </React.Fragment>
     );
 }

@@ -113,10 +113,8 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
     });
 
     edges.forEach((val: EdgeData, key: string) => {
-        const temp: string[] = key.split(':');
-        const src: number = parseInt(temp[0]);
-        const dest: number = parseInt(temp[1]);
-
+        const src: number = val.srcId;
+        const dest: number = val.destId;
         const srcNode: GraphNode | undefined = graphNodes.get(src);
         const destNode: GraphNode | undefined = graphNodes.get(dest);
 
@@ -141,14 +139,15 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
         
         if (temp !== null) {
             visited.add(temp.id);
+            const currNode: GraphNode | undefined = graphNodes.get(temp.id);
+            const currWeight: number | undefined = distMap.get(temp.id);
+
             animations.push({
                 id: temp.id,
                 type: "color",
-                color: "#000",
-                weight: temp.distance,
+                color: "#e4e4e4",
+                weight: Math.floor((currWeight !== undefined) ? currWeight : temp.distance),
             });
-            const currNode: GraphNode | undefined = graphNodes.get(temp.id);
-            const currWeight: number | undefined = distMap.get(temp.id);
 
             if (currNode !== undefined && currWeight !== undefined) {
                 currNode.neighbors.forEach((e: Edge) => {
@@ -160,6 +159,12 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
 
                         if (nextPossibleWeight < oldLowestWeight) {
                             distMap.set(destId, nextPossibleWeight);
+                            animations.push({
+                                id: destId,
+                                type: "color",
+                                color: "#7c94e4",
+                                weight: Math.floor(nextPossibleWeight),
+                            });
                             prioQ.insert({
                                 id: destId,
                                 distance: nextPossibleWeight

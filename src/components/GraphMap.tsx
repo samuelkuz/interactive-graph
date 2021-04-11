@@ -5,17 +5,17 @@ import NodeUpdated from "./NodeUpdated";
 import { GraphAnimationData, EdgeData, NodeData, Point } from "../types/types";
 import dijkstra from "../algorithms/Dijkstra";
 
-import "./GraphMapUpdated.scss";
+import "./GraphMap.scss";
 
 interface GraphMapProps {
     height: number,
     width: number,
 };
 
-const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
+const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     const [addNodePoint, setAddNodePoint] = useState<Point>({x: 0, y: 0});
     const [animations, setAnimations] = useState<GraphAnimationData[]>([]);
-    const [animationSpeed, setAnimationSpeed] = useState(200);
+    const [animationSpeed, setAnimationSpeed] = useState(300);
     const [nodeCounter, setNodeCounter] = useState<number>(0);
     const [editNodePoint, setEditNodePoint] = useState<Point>({x: 0, y: 0});
     const [edgeCounter, setEdgeCounter] = useState<number>(0);
@@ -27,10 +27,6 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
     const [svgAddNodePoint, setSvgAddNodePoint] = useState<Point>({x: 0, y: 0});
     const [viewPt, _setViewPt] = useState<Point>({x: 0, y: 0});
     const [zoom, _setZoom] = useState<number>(150);
-
-    // NodeMap exists
-    // EdgeMap exists
-    // Need to create djikstra function to handle this
 
     useEffect(() => {
         window.addEventListener("keydown", handleMovement);
@@ -44,13 +40,12 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
         nodeMap.set(6, {id: 6, color: "#919191", name: "6", point: {x: 80, y: 75}, size: 10});
         nodeMap.set(7, {id: 7, color: "#919191", name: "7", point: {x: 90, y: 100}, size: 10});
 
-        edgeMap.set("1:2", {destId: 2, destPoint: {x: 30, y: 30}, srcId: 1, srcPoint: {x: 10, y: 10}, weight: 28.284271247461902});
-        edgeMap.set("2:3", {destId: 3, destPoint: {x: 60, y: 30}, srcId: 2, srcPoint: {x: 30, y: 30}, weight: 30});
-        edgeMap.set("3:4", {destId: 2, destPoint: {x: 100, y: 40}, srcId: 3, srcPoint: {x: 60, y: 30}, weight: 41.23105625617661});
-        edgeMap.set("4:6", {destId: 6, destPoint: {x: 80, y: 75}, srcId: 4, srcPoint: {x: 100, y: 40}, weight: 40.311288741492746});
-        edgeMap.set("6:7", {destId: 7, destPoint: {x: 90, y: 100}, srcId: 6, srcPoint: {x: 80, y: 75},weight: 26.92582403567252});
-        edgeMap.set("6:5", {destId: 5, destPoint: {x: 40, y: 100}, srcId: 4, srcPoint: {x: 80, y: 75}, weight: 47.16990566028302});
-
+        edgeMap.set("1:2", {srcId: 1, srcPoint: {x: 10, y: 10}, destId: 2, destPoint: {x: 30, y: 30}, weight: 28.284271247461902});
+        edgeMap.set("2:3", {srcId: 2, srcPoint: {x: 30, y: 30}, destId: 3, destPoint: {x: 60, y: 30}, weight: 30});
+        edgeMap.set("3:4", {srcId: 3, srcPoint: {x: 60, y: 30}, destId: 4, destPoint: {x: 100, y: 40}, weight: 41.23105625617661});
+        edgeMap.set("4:6", {srcId: 4, srcPoint: {x: 100, y: 40}, destId: 6, destPoint: {x: 80, y: 75}, weight: 40.311288741492746});
+        edgeMap.set("6:5", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 5, destPoint: {x: 40, y: 100}, weight: 47.16990566028302});
+        edgeMap.set("6:7", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 7, destPoint: {x: 90, y: 100}, weight: 26.92582403567252});
         setEdgeCounter(7);
         setNodeCounter(8);
 
@@ -71,23 +66,14 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
                     setTimeout(() => {
                         const node = nodeMap.get(animation.id);
                         if (node === undefined) return;
-                        console.log(node);
+                        // console.log(node);
                         node.color = animation.color;
+                        node.name = animation.weight.toString();
                         setAnimations(tempAnimations);
                     }, animationSpeed);
                     break;
                 case "name":
-                    // setTimeout(() => {
-                        // const barOneIdx = animation.barOneIdx;
-                        // const barTwoIdx = animation.barTwoIdx;
-                        // const tempBarsInfo = JSON.parse(JSON.stringify(barsInfo));
-                        // const tempBars = [ ...bars ];
-                        // [tempBarsInfo[barOneIdx], tempBarsInfo[barTwoIdx]] = [tempBarsInfo[barTwoIdx], tempBarsInfo[barOneIdx]];
-                        // [tempBars[barOneIdx], tempBars[barTwoIdx]] = [tempBars[barTwoIdx], tempBars[barOneIdx]];
-                        // setBars(tempBars);
-                        // setBarsInfo(tempBarsInfo);
-                        // setAnimations(tempAnimations);
-                    // }, animationSpeed);
+                    // Don't really need a case for DAG visualization
                     break;
             }
         }
@@ -262,7 +248,7 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
     };
 
     const handleDeleteNode = () => {
-        const removeEdges = [];
+        const removeEdges: string[] = [];
         edgeMap.forEach((val: EdgeData, key: string) => {
             // Delete any edges including deleted node
             if (selectedNode === val.srcId || selectedNode === val.destId) {
@@ -321,7 +307,6 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
 
     const handleDijkstra = () => {
         const tempAnimations = dijkstra(selectedNode, nodeMap, edgeMap);
-        // console.log(tempAnimations);
         setAnimations(tempAnimations);
     };
     
@@ -342,4 +327,4 @@ const GraphMapUpdated: React.FC<GraphMapProps> = ({height, width}) => {
     );
 };
 
-export default GraphMapUpdated;
+export default GraphMap;
