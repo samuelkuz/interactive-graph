@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 import { EdgeData, Point } from "../types/types";
 
@@ -6,10 +6,29 @@ import "./Edge.scss";
 
 interface EdgeProps {
     data: EdgeData,
-    color: string
+    color: string,
+    editCallback: (offset: Point, id: string) => void;
 };
 
-const Edge: React.FC<EdgeProps> = ({data, color}) => {
+const Edge: React.FC<EdgeProps> = ({data, color, editCallback}) => {
+    const lineRef = useRef<SVGLineElement>(null);
+
+    const handleShowEdit = () => {
+        if (lineRef.current != null) {
+            const location = lineRef.current.getBoundingClientRect();
+
+            const offsetPoint = {
+                x: location.left,
+                y: location.top,
+            };
+            const edgeId: string = `${data.srcId}:${data.destId}`;
+
+            console.log(offsetPoint);
+            
+            editCallback(offsetPoint, edgeId);
+        }
+    }
+    
     const tempStyle = {
         stroke: color,
         strokeWidth: "1.5",
@@ -20,19 +39,13 @@ const Edge: React.FC<EdgeProps> = ({data, color}) => {
         strokeWidth: "1",
     };
 
-    let test = {
-        x: 0,
-        y: 0
-    };
-
-    let test2 = {
-        x: 0,
-        y: 0
-    };
-
-    let test3 = {
-        x: 0,
-        y: 0
+    const arrowCords = {
+        x1: 0,
+        y1: 0,
+        x2: 0,
+        y2: 0,
+        x3: 0,
+        y3: 0,
     };
 
     // Eventually draw arrow calculating angle pts
@@ -44,8 +57,8 @@ const Edge: React.FC<EdgeProps> = ({data, color}) => {
   
         const testX = 11 * Math.cos(theta);
         const testY = 11 * Math.sin(theta);
-        test.x = testX + data.destPoint.x;
-        test.y = testY + data.destPoint.y;
+        arrowCords.x1 = testX + data.destPoint.x;
+        arrowCords.y1 = testY + data.destPoint.y;
 
         const theta2 = (degrees - 10) * (Math.PI / 180);
         const theta3 = (degrees + 10) * (Math.PI / 180);
@@ -55,20 +68,18 @@ const Edge: React.FC<EdgeProps> = ({data, color}) => {
         const testX3 = 15 * Math.cos(theta3);
         const testY3 = 15 * Math.sin(theta3);
 
-        test2.x = testX2 + data.destPoint.x;
-        test2.y = testY2 + data.destPoint.y;
-
-        test3.x = testX3 + data.destPoint.x;
-        test3.y = testY3 + data.destPoint.y;
+        arrowCords.x2 = testX2 + data.destPoint.x;
+        arrowCords.y2 = testY2 + data.destPoint.y;
+        arrowCords.x3 = testX3 + data.destPoint.x;
+        arrowCords.y3 = testY3 + data.destPoint.y;
     };
 
     calculateArrow();
 
     return (
         <React.Fragment>
-           <line x1={data.srcPoint.x} y1={data.srcPoint.y} x2={test.x} y2={test.y} style={tempStyle} />
-           <polygon points={`${test.x},${test.y} ${test2.x},${test2.y} ${test3.x},${test3.y}`} style={tempStyle2}/>
-            {/* <polygon points="80,70 79,69 79,71" style={tempStyle} /> */}
+           <line ref={lineRef} x1={data.srcPoint.x} y1={data.srcPoint.y} x2={arrowCords.x1} y2={arrowCords.y1} style={tempStyle} onClick={handleShowEdit}/>
+           <polygon points={`${arrowCords.x1},${arrowCords.y1} ${arrowCords.x2},${arrowCords.y2} ${arrowCords.x3},${arrowCords.y3}`} style={tempStyle2} onClick={handleShowEdit}/>
         </React.Fragment>
     );
 }

@@ -19,12 +19,15 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     const [animationSpeed, setAnimationSpeed] = useState(200);
     const [edgeCounter, setEdgeCounter] = useState<number>(0);
     const [edgeMap, setEdgeMap] = useState<Map<string, EdgeData>>(new Map<string, EdgeData>());
+    const [editEdgePoint, setEditEdgePoint] = useState<Point>({x: 0, y: 0});
     const [editNodePoint, setEditNodePoint] = useState<Point>({x: 0, y: 0});
     const [nodeCounter, setNodeCounter] = useState<number>(0);
     const [nodeMap, setNodeMap] = useState<Map<number, NodeData>>(new Map<number, NodeData>());
     const [renderCount, setRenderCount] = useState<number>(0);
+    const [selectedEdge, setSelectedEdge] = useState<string>("");
     const [selectedNode, setSelectedNode] = useState<number>(0);
     const [showAddNode, _setShowAddNode] = useState<boolean>(false);
+    const [showEditEdge, _setShowEditEdge] = useState<boolean>(false);
     const [showEditNode, _setShowEditNode] = useState<boolean>(false);
     const [svgAddNodePoint, setSvgAddNodePoint] = useState<Point>({x: 0, y: 0});
     const [viewPt, _setViewPt] = useState<Point>({x: 0, y: 0});
@@ -96,6 +99,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     }, [animations]);
 
     const addEdgeInputRef = useRef<HTMLInputElement>(null);
+    const showEditEdgeRef = useRef(showEditEdge);
     const showEditNodeRef = useRef(showEditNode);
     const svgRef = useRef<SVGSVGElement>(null);
     const showAddNodeRef = useRef(showAddNode);
@@ -105,6 +109,11 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     const setShowAddNode = (data: boolean) => {
         showAddNodeRef.current = data;
         _setShowAddNode(data);
+    };
+
+    const setShowEditEdge = (data: boolean) => {
+        showEditEdgeRef.current = data;
+        _setShowEditEdge(data);
     };
 
     const setShowEditNode = (data: boolean) => {
@@ -144,13 +153,22 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         </div>
         );
     };
+
+    const buildEditEdge = () => {
+        return (
+        <div className="edit-edge-container" style={calculateEditEdgeStyle()}>
+            <div className="edit-edge-title">Edit Edge:</div>
+            <div className="edit-edge-submit" onClick={() => handleDeleteEdge()}>Delete</div>
+        </div>
+        );
+    };
     
     const buildEdges = () => {
         const edgeObjs: JSX.Element[] = [];
 
         edgeMap.forEach((val: EdgeData, key: string) => {
             // Eventually calculate if it should be rendered or not
-            edgeObjs.push(<Edge key={Math.random() * 10000} data={val} color={"#000"}/>);
+            edgeObjs.push(<Edge key={Math.random() * 10000} data={val} color={"#000"} editCallback={handleEditEdge}/>);
         });
 
         return edgeObjs;
@@ -184,6 +202,15 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         };
 
         return style;
+    };
+
+    const calculateEditEdgeStyle = () => {
+        const style = {
+            left: editEdgePoint.x,
+            top: editEdgePoint.y + 25,
+        };
+
+        return style;  
     };
 
     const calculateEditNodeStyle = () => {
@@ -249,6 +276,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
             if (e.target instanceof SVGSVGElement) {
                 if (showEditNodeRef.current) {
                     setShowEditNode(false);
+                    setShowEditEdge(false);
                     return;
                 }
 
@@ -275,6 +303,11 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         }
     };
 
+    const handleDeleteEdge = () => {
+        edgeMap.delete(selectedEdge);
+        setShowEditEdge(false);
+    };
+
     const handleDeleteNode = () => {
         const removeEdges: string[] = [];
         edgeMap.forEach((val: EdgeData, key: string) => {
@@ -290,9 +323,18 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
 
     const handleEditNode = (offset: Point, id: number) => {
         setShowAddNode(false);
+        setShowEditEdge(false);
         setSelectedNode(id);
         setEditNodePoint(offset);
         setShowEditNode(true);
+    };
+
+    const handleEditEdge = (offset: Point, id: string) => {
+        setShowAddNode(false);
+        setShowEditNode(false);
+        setSelectedEdge(id);
+        setEditEdgePoint(offset);
+        setShowEditEdge(true);
     };
 
     const handleMovement = (e: KeyboardEvent) => {
@@ -358,6 +400,9 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
             }
             {showEditNode &&
                 buildEditNode()
+            }
+            {showEditEdge &&
+                buildEditEdge()
             }
         </div>
     );
