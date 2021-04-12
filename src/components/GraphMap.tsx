@@ -276,6 +276,9 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
             if (e.target instanceof SVGSVGElement) {
                 if (showEditNodeRef.current) {
                     setShowEditNode(false);
+                    return;
+                }
+                if (showEditEdgeRef.current) {
                     setShowEditEdge(false);
                     return;
                 }
@@ -319,6 +322,11 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
 
         nodeMap.delete(selectedNode);
         setShowEditNode(false);
+    };
+
+    const handleDijkstra = (srcId: number) => {
+        const tempAnimations = dijkstra(srcId, nodeMap, edgeMap);
+        setAnimations(tempAnimations);
     };
 
     const handleEditNode = (offset: Point, id: number) => {
@@ -369,23 +377,18 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         }
     };
 
-    // temporarily do not use
-    const mapStyle: CSSProperties = {
-        height: height,
-        width: width,
-    };
-
-    const handleDijkstra = (srcId: number) => {
-        const tempAnimations = dijkstra(srcId, nodeMap, edgeMap);
-        setAnimations(tempAnimations);
-    };
-
-    const handleReset = () => {
+        const handleReset = () => {
         nodeMap.forEach((val: NodeData, key: number) => {
             val.color = "#919191";
             val.name = val.id.toString();
         });
         setRenderCount(renderCount + 1);
+    };
+
+    // temporarily do not use
+    const mapStyle: CSSProperties = {
+        height: height,
+        width: width,
     };
     
     return (
