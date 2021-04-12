@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, CSSProperties } from "react";
 
 import Edge from "./Edge";
 import NodeUpdated from "./NodeUpdated";
-import GraphAlgorithmButton from "./GraphAlgorithmButton";
+import AlgorithmButton from "./AlgorithmButton";
+import AlgorithmDropDown from "./AlgorithmDropDown";
 import { GraphAnimationData, EdgeData, NodeData, Point } from "../types/types";
 import dijkstra from "../algorithms/Dijkstra";
 
@@ -188,10 +189,8 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     const buildSettings = () => {
         return (
             <div className="algorithm-selector-container">
-                <GraphAlgorithmButton algorithmCallback={handleDijkstra}/>
-                <div className="algorithm-selector" onClick={() => handleReset()}>
-                    Reset to IDs
-                </div>
+                <AlgorithmDropDown title={"Dijkstra's"} algorithmCallback={handleDijkstra}/>
+                <AlgorithmButton title={"Reset to IDs"} callBack={handleReset}/>
             </div>);
     };
 
@@ -207,7 +206,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     const calculateEditEdgeStyle = () => {
         const style = {
             left: editEdgePoint.x,
-            top: editEdgePoint.y + 25,
+            top: editEdgePoint.y,
         };
 
         return style;  
@@ -283,7 +282,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                     return;
                 }
 
-                if (!showAddNodeRef.current ) {
+                if (!showAddNodeRef.current) {
                     const clickedPt = {
                         x: e.clientX,
                         y: e.clientY
@@ -383,12 +382,6 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
             val.name = val.id.toString();
         });
         setRenderCount(renderCount + 1);
-    };
-
-    // temporarily do not use
-    const mapStyle: CSSProperties = {
-        height: height,
-        width: width,
     };
     
     return (
