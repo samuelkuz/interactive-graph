@@ -22,8 +22,6 @@ const Edge: React.FC<EdgeProps> = ({data, color, editCallback}) => {
                 y: location.top,
             };
             const edgeId: string = `${data.srcId}:${data.destId}`;
-
-            console.log(offsetPoint);
             
             editCallback(offsetPoint, edgeId);
         }
@@ -48,7 +46,6 @@ const Edge: React.FC<EdgeProps> = ({data, color, editCallback}) => {
         y3: 0,
     };
 
-    // Eventually draw arrow calculating angle pts
     const calculateArrow = () => {
         const deltaX = data.srcPoint.x - data.destPoint.x;
         const deltaY = data.srcPoint.y - data.destPoint.y;

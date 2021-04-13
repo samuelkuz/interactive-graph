@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, CSSProperties } from "react";
 
 import Edge from "./Edge";
-import NodeUpdated from "./NodeUpdated";
+import GraphNode from "./GraphNode";
 import AlgorithmButton from "./AlgorithmButton";
 import AlgorithmDropDown from "./AlgorithmDropDown";
 import { GraphAnimationData, EdgeData, NodeData, Point } from "../types/types";
@@ -180,7 +180,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
 
         nodeMap.forEach((val: NodeData, key: number) => {
             // Eventually calculate if it should be rendered or not
-            nodeObjs.push(<NodeUpdated key={Math.random() * 10000} data={val} color={val.color} editCallback={handleEditNode}/>);
+            nodeObjs.push(<GraphNode key={Math.random() * 10000} data={val} color={val.color} editCallback={handleEditNode}/>);
         });
 
         return nodeObjs;

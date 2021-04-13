@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 
 import { NodeData, Point } from "../types/types";
 
-import "./NodeUpdated.scss";
+import "./GraphNode.scss";
 
 interface NodeProps {
     data: NodeData;
@@ -11,7 +11,7 @@ interface NodeProps {
 };
 
 
-const NodeUpdated: React.FC<NodeProps> = ({data, color, editCallback}) => {
+const GraphNode: React.FC<NodeProps> = ({data, color, editCallback}) => {
     const circleRef = useRef<SVGCircleElement>(null);
 
     const handleShowEdit = () => {
@@ -65,4 +65,4 @@ const NodeUpdated: React.FC<NodeProps> = ({data, color, editCallback}) => {
     );
 }
 
-export default NodeUpdated;
+export default GraphNode;

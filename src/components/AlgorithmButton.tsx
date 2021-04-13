@@ -13,7 +13,7 @@ const AlgorithmButton: React.FC<InputProps> = ({callBack, title}) => {
     };
 
     return (
-        <div className="algorithm-button-container" onClick={() => handleCallback}>
+        <div className="algorithm-button-container" onClick={() => handleCallback()}>
             <div className="algorithm-button-title">{title}</div>
         </div>
 
