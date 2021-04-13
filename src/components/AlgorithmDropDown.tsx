@@ -15,9 +15,9 @@ const AlgorithmDropDown: React.FC<InputProps> = ({algorithmCallback, title}) => 
     const buildDropDown = () => {
         return (
             <div className="drop-down-container">
-                <div className="input-container">
-                    <div className="input-title">From:</div>
-                    <input className="input-box" ref={startAlgorithmRef}></input>
+                <div className="drop-down-input-container">
+                    <div className="drop-down-input-title">From Node ID:</div>
+                    <input className="drop-down-input-box" ref={startAlgorithmRef}></input>
                 </div>
                 <div className="drop-down-submit" onClick={() => handleStartAlgorithm()}>Start</div>
             </div>
@@ -28,13 +28,14 @@ const AlgorithmDropDown: React.FC<InputProps> = ({algorithmCallback, title}) => 
         if (startAlgorithmRef.current !== null && startAlgorithmRef.current.value.length > 0) {
             const startId: number = parseInt(startAlgorithmRef.current.value);
             startAlgorithmRef.current.value = "";
+            setShowDropDown(false);
             algorithmCallback(startId);
         }
     };
     
     return (
-        <div className="drop-down-button-container" onClick={() => setShowDropDown(!showDropDown)}>
-            <div className="drop-down-title">{title}</div>
+        <div className="drop-down-button-container">
+            <div className="drop-down-button-title" onClick={() => setShowDropDown(!showDropDown)}>{title}</div>
             {showDropDown &&
                 buildDropDown()
             }
