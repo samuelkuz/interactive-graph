@@ -1,7 +1,5 @@
 import { GraphAnimationData, EdgeData, NodeData} from "../types/types";
 
-
-
 interface Node {
     id: number,
     inDegree: number,
@@ -13,6 +11,7 @@ interface Edge {
 };
 
 const topologicalSort = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): GraphAnimationData[] => {
+    // Kahn's Algorithm
     const animations: GraphAnimationData[] = [];
     const graph: Map<number, Node> = new Map<number, Node>();
     const queue: Node[] = [];

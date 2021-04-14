@@ -1,11 +1,13 @@
 .map-wrapper {
     margin: auto;
-    height: 40%;
-    width: 40%;
+    height: 100%;
+    width: 100%;
 
     .map {
         margin: auto;
         border: 2px solid black;
+        height: 40%;
+        width: 40%;
     }
 
     .add-node-container {
