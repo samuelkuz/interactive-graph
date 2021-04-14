@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef, CSSProperties } from "react";
 
-import Edge from "./Edge";
-import GraphNode from "./GraphNode";
 import AlgorithmButton from "./AlgorithmButton";
 import AlgorithmDropDown from "./AlgorithmDropDown";
+import Edge from "./Edge";
+import GraphNode from "./GraphNode";
 import { GraphAnimationData, EdgeData, NodeData, Point } from "../types/types";
+
 import dijkstra from "../algorithms/Dijkstra";
+import topologicalSort from "../algorithms/TopologicalSort";
 
 import "./GraphMap.scss";
 
@@ -73,7 +75,6 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                         const node = nodeMap.get(animation.id);
                         if (node === undefined) return;
                         node.color = animation.color;
-                        // node.name = animation.weight.toString();
                         setAnimations(tempAnimations);
                     }, animationSpeed);
                     break;
@@ -82,7 +83,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                     setTimeout(() => {
                         const node = nodeMap.get(animation.id);
                         if (node === undefined) return;
-                        node.name = animation.weight.toString();
+                        node.name = animation.name;
                         setAnimations(tempAnimations);
                     }, animationSpeed);
                     break;
@@ -91,7 +92,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                         const node = nodeMap.get(animation.id);
                         if (node === undefined) return;
                         node.color = animation.color;
-                        node.name = animation.weight.toString();
+                        node.name = animation.name;
                         setAnimations(tempAnimations);
                     }, animationSpeed);
                     break;
@@ -190,6 +191,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         return (
             <div className="algorithm-selector-container">
                 <AlgorithmDropDown title={"Dijkstra's"} algorithmCallback={handleDijkstra}/>
+                <AlgorithmButton title={"Topological Sort"} callBack={handleTopologicalSort}/>
                 <AlgorithmButton title={"Reset to IDs"} callBack={handleReset}/>
             </div>);
     };
@@ -376,12 +378,17 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         }
     };
 
-        const handleReset = () => {
+    const handleReset = () => {
         nodeMap.forEach((val: NodeData, key: number) => {
             val.color = "#919191";
             val.name = val.id.toString();
         });
         setRenderCount(renderCount + 1);
+    };
+
+    const handleTopologicalSort = () => {
+        const tempAnimations = topologicalSort(nodeMap, edgeMap);
+        setAnimations(tempAnimations);
     };
     
     return (

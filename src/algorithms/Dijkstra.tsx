@@ -1,12 +1,12 @@
 import { GraphAnimationData, EdgeData, NodeData} from "../types/types";
 
-interface GraphNode {
+interface Node {
     id: number,
     neighbors: Edge[]
 }
 
 interface Edge {
-    dest: GraphNode,
+    dest: Node,
     weight: number,
 };
 
@@ -95,7 +95,7 @@ const priorityQueue = (): PriorityQueue => {
 
 const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): GraphAnimationData[] => {
     const animations: GraphAnimationData[] = [];
-    const graphNodes: Map<number, GraphNode> = new Map<number, GraphNode>();
+    const graphNodes: Map<number, Node> = new Map<number, Node>();
     const distMap: Map<number, number> = new Map<number, number>();
     const visited: Set<number> = new Set<number>();
 
@@ -115,8 +115,8 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
     edges.forEach((val: EdgeData, key: string) => {
         const src: number = val.srcId;
         const dest: number = val.destId;
-        const srcNode: GraphNode | undefined = graphNodes.get(src);
-        const destNode: GraphNode | undefined = graphNodes.get(dest);
+        const srcNode: Node | undefined = graphNodes.get(src);
+        const destNode: Node | undefined = graphNodes.get(dest);
 
         // Add edges
         if (srcNode !== undefined && destNode !== undefined) { 
@@ -139,14 +139,14 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
         
         if (temp !== null) {
             visited.add(temp.id);
-            const currNode: GraphNode | undefined = graphNodes.get(temp.id);
+            const currNode: Node | undefined = graphNodes.get(temp.id);
             const currWeight: number | undefined = distMap.get(temp.id);
 
             animations.push({
                 id: temp.id,
                 type: "all",
                 color: "#e4e4e4",
-                weight: Math.floor((currWeight !== undefined) ? currWeight : temp.distance),
+                name: Math.floor((currWeight !== undefined) ? currWeight : temp.distance).toString(),
             });
 
             if (currNode !== undefined && currWeight !== undefined) {
@@ -163,7 +163,7 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
                                 id: destId,
                                 type: "all",
                                 color: "#7c94e4",
-                                weight: Math.floor(nextPossibleWeight),
+                                name: Math.floor(nextPossibleWeight).toString(),
                             });
                             prioQ.insert({
                                 id: destId,

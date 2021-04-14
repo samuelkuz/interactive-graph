@@ -23,5 +23,5 @@ export interface GraphAnimationData {
     id: number,
     type: string,
     color: string,
-    weight: number,
+    name: string,
 }
