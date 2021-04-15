@@ -35,32 +35,13 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     const [showEditNode, _setShowEditNode] = useState<boolean>(false);
     const [svgAddNodePoint, setSvgAddNodePoint] = useState<Point>({x: 0, y: 0});
     const [viewPt, _setViewPt] = useState<Point>({x: 0, y: 0});
-    const [zoom, _setZoom] = useState<number>(200);
+    const [zoom, _setZoom] = useState<number>(150);
 
     useEffect(() => {
         window.addEventListener("keydown", handleMovement);
         window.addEventListener("click", handleClick);
 
-        // Randomized data is too messy
-        // randomizeNodes();
-        // randomizeEdges();
-
-        nodeMap.set(1, {id: 1, color: "#919191", name: "1", point: {x: 10, y: 10}, size: 10});
-        nodeMap.set(2, {id: 2, color: "#919191", name: "2", point: {x: 30, y: 30}, size: 10});
-        nodeMap.set(3, {id: 3, color: "#919191", name: "3", point: {x: 60, y: 30}, size: 10});
-        nodeMap.set(4, {id: 4, color: "#919191", name: "4", point: {x: 100, y: 40}, size: 10});
-        nodeMap.set(5, {id: 5, color: "#919191", name: "5", point: {x: 40, y: 100}, size: 10});
-        nodeMap.set(6, {id: 6, color: "#919191", name: "6", point: {x: 80, y: 75}, size: 10});
-        nodeMap.set(7, {id: 7, color: "#919191", name: "7", point: {x: 90, y: 100}, size: 10});
-
-        edgeMap.set("1:2", {srcId: 1, srcPoint: {x: 10, y: 10}, destId: 2, destPoint: {x: 30, y: 30}, weight: 28.284271247461902});
-        edgeMap.set("2:3", {srcId: 2, srcPoint: {x: 30, y: 30}, destId: 3, destPoint: {x: 60, y: 30}, weight: 30});
-        edgeMap.set("3:4", {srcId: 3, srcPoint: {x: 60, y: 30}, destId: 4, destPoint: {x: 100, y: 40}, weight: 41.23105625617661});
-        edgeMap.set("4:6", {srcId: 4, srcPoint: {x: 100, y: 40}, destId: 6, destPoint: {x: 80, y: 75}, weight: 40.311288741492746});
-        edgeMap.set("6:5", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 5, destPoint: {x: 40, y: 100}, weight: 47.16990566028302});
-        edgeMap.set("6:7", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 7, destPoint: {x: 90, y: 100}, weight: 26.92582403567252});
-        setEdgeCounter(6);
-        setNodeCounter(7);
+        handleReset();
 
         return function cleanup() {
             window.removeEventListener("keydown", handleMovement);
@@ -89,6 +70,12 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                         const node = nodeMap.get(animation.id);
                         if (node === undefined) return;
                         node.name = animation.name;
+                        setAnimations(tempAnimations);
+                    }, animationSpeed);
+                    break;
+                case "transpose":
+                    setTimeout(() => {
+                        transposeEdge(animation.edgeId);
                         setAnimations(tempAnimations);
                     }, animationSpeed);
                     break;
@@ -198,7 +185,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                 <AlgorithmDropDown title={"Dijkstra's"} algorithmCallback={handleDijkstra}/>
                 <AlgorithmButton title={"Topological Sort"} callBack={handleTopologicalSort}/>
                 <AlgorithmButton title={"Kosaraju"} callBack={handleKosaraju}/>
-                <AlgorithmButton title={"Reset to IDs"} callBack={handleReset}/>
+                <AlgorithmButton title={"Reset"} callBack={handleReset}/>
             </div>);
     };
 
@@ -390,10 +377,26 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     };
 
     const handleReset = () => {
-        nodeMap.forEach((val: NodeData, key: number) => {
-            val.color = "#919191";
-            val.name = val.id.toString();
-        });
+        nodeMap.clear();
+        edgeMap.clear();
+
+        nodeMap.set(1, {id: 1, color: "#919191", name: "1", point: {x: 10, y: 10}, size: 10});
+        nodeMap.set(2, {id: 2, color: "#919191", name: "2", point: {x: 30, y: 30}, size: 10});
+        nodeMap.set(3, {id: 3, color: "#919191", name: "3", point: {x: 60, y: 30}, size: 10});
+        nodeMap.set(4, {id: 4, color: "#919191", name: "4", point: {x: 100, y: 40}, size: 10});
+        nodeMap.set(5, {id: 5, color: "#919191", name: "5", point: {x: 40, y: 100}, size: 10});
+        nodeMap.set(6, {id: 6, color: "#919191", name: "6", point: {x: 80, y: 75}, size: 10});
+        nodeMap.set(7, {id: 7, color: "#919191", name: "7", point: {x: 90, y: 100}, size: 10});
+
+        edgeMap.set("1:2", {srcId: 1, srcPoint: {x: 10, y: 10}, destId: 2, destPoint: {x: 30, y: 30}, weight: 28.284271247461902});
+        edgeMap.set("2:3", {srcId: 2, srcPoint: {x: 30, y: 30}, destId: 3, destPoint: {x: 60, y: 30}, weight: 30});
+        edgeMap.set("3:4", {srcId: 3, srcPoint: {x: 60, y: 30}, destId: 4, destPoint: {x: 100, y: 40}, weight: 41.23105625617661});
+        edgeMap.set("4:6", {srcId: 4, srcPoint: {x: 100, y: 40}, destId: 6, destPoint: {x: 80, y: 75}, weight: 40.311288741492746});
+        edgeMap.set("6:5", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 5, destPoint: {x: 40, y: 100}, weight: 47.16990566028302});
+        edgeMap.set("6:7", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 7, destPoint: {x: 90, y: 100}, weight: 26.92582403567252});
+        
+        setEdgeCounter(6);
+        setNodeCounter(7);
         setRenderCount(renderCount + 1);
     };
 
@@ -402,52 +405,20 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         setAnimations(tempAnimations);
     };
 
-    const randomizeNodes = () => {
-        const maxDimensions = {
-            x: 200,
-            y: 200,
+    const transposeEdge = (edgeId: string): void => {
+        const edge = edgeMap.get(edgeId);
+        if (edge === undefined) return;
+        const newKey = `${edge.destId}:${edge.srcId}`;
+        const newEdge: EdgeData = {
+            srcId: edge.destId,
+            srcPoint: edge.destPoint,
+            destId: edge.srcId,
+            destPoint: edge.srcPoint,
+            weight: edge.weight,
         };
-        const count = 10;
-        
-        for (let i = 0; i < count; i++) {
-            const randomX = Math.floor(Math.random() * maxDimensions.x);
-            const randomY = Math.floor(Math.random() * maxDimensions.y);
 
-            nodeMap.set(i, {id: i, color: "#919191", name: `${i}`, point: {x: randomX, y: randomY}, size: 10});
-        }
-
-        setNodeCounter(count);
-    };
-
-    const randomizeEdges = () => {
-        const nodeCount = 10;
-        const count = 20;
-
-        for (let i = 0; i < count; i++) {
-            let random = Math.floor(Math.random() * nodeCount);
-            let randomDest = random;
-            let edgeKey = `${random}:${randomDest}`;
-            
-            while (randomDest === random && !edgeMap.has(edgeKey)) {
-                const temp = Math.floor(Math.random() * nodeCount);
-                randomDest = temp;
-                edgeKey = `${random}:${randomDest}`;
-            }
-
-            const srcNode = nodeMap.get(random);
-            const destNode = nodeMap.get(randomDest);
-
-            if (srcNode !== undefined && destNode !== undefined) {
-                const srcPoint: Point = srcNode.point;
-                const destPoint: Point = destNode.point;
-                const weight = Math.sqrt(Math.pow(srcPoint.x - destPoint.x, 2) + Math.pow(srcPoint.y - destPoint.y, 2));
-                const edgeData = {srcId: random, destId: randomDest, srcPoint: srcPoint, destPoint: destPoint, weight: weight};
-
-                edgeMap.set(edgeKey, edgeData);
-            }
-        }
-        
-        setEdgeCounter(count);
+        edgeMap.delete(edgeId);
+        edgeMap.set(newKey, newEdge);
     };
     
     return (

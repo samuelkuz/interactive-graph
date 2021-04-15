@@ -53,29 +53,37 @@ const kosaraju = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): G
         }
     });
 
-    console.log("STACK: ", stack);
-
-    const transpose: Map<number, Node> = getTranspose(nodes, edges);
+    const transpose: Map<number, Node> = getTranspose(nodes, edges, animations);
 
     visited.clear();
+
+    let sccCount = 0;
 
     while (stack.length > 0) {
         const id = stack.pop();
         
         if (id !== undefined) {
             if (!visited.has(id)) {
-                DFSUtil(id, visited, transpose);
-                console.log("----------------");
-            }    
+                DFSUtil(id, visited, transpose, sccCount, animations);
+                // console.log("----------------");
+                sccCount++;
+            }
         }
     }
 
     return animations;
 }
 
-const DFSUtil = (id: number,  visited: Set<number>, transpose: Map<number, Node>) => {
+const DFSUtil = (id: number,  visited: Set<number>, transpose: Map<number, Node>, sccCount: number, animations: GraphAnimationData[]) => {
     visited.add(id);
-    console.log(id);
+    // console.log(id);
+    animations.push({
+        id: id,
+        type: "all",
+        color: "#e4e4e4",
+        name: sccCount.toString(),
+        edgeId: "",
+    });
 
     const currNode = transpose.get(id);
 
@@ -83,13 +91,13 @@ const DFSUtil = (id: number,  visited: Set<number>, transpose: Map<number, Node>
         currNode.neighbors.forEach((e: Edge) => {
             const destNode = e.dest;
             if (!visited.has(destNode.id)) {
-                DFSUtil(destNode.id, visited, transpose);
+                DFSUtil(destNode.id, visited, transpose, sccCount, animations);
             }
         });
     }
 };
 
-const getTranspose = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): Map<number, Node> => {
+const getTranspose = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>, animations: GraphAnimationData[]): Map<number, Node> => {
     const tempGraph: Map<number, Node> = new Map<number, Node>();
 
     nodes.forEach((val: NodeData, key: number) => {
@@ -111,6 +119,14 @@ const getTranspose = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>
 
         // Add edges
         if (srcNode !== undefined && destNode !== undefined) {
+            const oldEdgeKey = `${srcNode.id}:${destNode.id}`;
+            animations.push({
+                id: 0,
+                type: "transpose",
+                color: "#000000",
+                name: "",
+                edgeId: oldEdgeKey,
+            });
             destNode.neighbors.push({
                 dest: srcNode
             });
