@@ -7,6 +7,7 @@ import GraphNode from "./GraphNode";
 import { GraphAnimationData, EdgeData, NodeData, Point } from "../types/types";
 
 import dijkstra from "../algorithms/Dijkstra";
+import kosaraju from "../algorithms/Kosaraju";
 import topologicalSort from "../algorithms/TopologicalSort";
 
 import "./GraphMap.scss";
@@ -83,7 +84,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                     }, animationSpeed);
                     break;
                 case "name":
-                    // Don't really need a case for DAG visualization
+                    // Don't really need this case name/color usually changes together
                     setTimeout(() => {
                         const node = nodeMap.get(animation.id);
                         if (node === undefined) return;
@@ -196,6 +197,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
             <div className="algorithm-selector-container">
                 <AlgorithmDropDown title={"Dijkstra's"} algorithmCallback={handleDijkstra}/>
                 <AlgorithmButton title={"Topological Sort"} callBack={handleTopologicalSort}/>
+                <AlgorithmButton title={"Kosaraju"} callBack={handleKosaraju}/>
                 <AlgorithmButton title={"Reset to IDs"} callBack={handleReset}/>
             </div>);
     };
@@ -348,6 +350,11 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         setSelectedEdge(id);
         setEditEdgePoint(offset);
         setShowEditEdge(true);
+    };
+
+    const handleKosaraju = () => {
+        const tempAnimations = kosaraju(nodeMap, edgeMap);
+        setAnimations(tempAnimations);
     };
 
     const handleMovement = (e: KeyboardEvent) => {

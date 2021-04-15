@@ -24,4 +24,5 @@ export interface GraphAnimationData {
     type: string,
     color: string,
     name: string,
+    edgeId: string,
 }

@@ -10,6 +10,8 @@ interface Edge {
     dest: Node
 };
 
+let nodeCount = 0;
+
 const kosaraju = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): GraphAnimationData[] => {
     // Kahn's Algorithm
     const animations: GraphAnimationData[] = [];
@@ -40,14 +42,18 @@ const kosaraju = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): G
         }
     });
 
+    nodeCount = nodes.size;
+
     const stack: number[] = [];
     const visited: Set<number> = new Set<number>();
 
     graph.forEach((node: Node, key: number) => {
         if (!visited.has(key)) {
-            fillOrder(node, visited, stack);
+            fillOrder(node, visited, stack, animations);
         }
     });
+
+    console.log("STACK: ", stack);
 
     const transpose: Map<number, Node> = getTranspose(nodes, edges);
 
@@ -58,14 +64,30 @@ const kosaraju = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): G
         
         if (id !== undefined) {
             if (!visited.has(id)) {
-                //DFSUtil(v, visited);
-                console.log("");
+                DFSUtil(id, visited, transpose);
+                console.log("----------------");
             }    
         }
     }
 
     return animations;
 }
+
+const DFSUtil = (id: number,  visited: Set<number>, transpose: Map<number, Node>) => {
+    visited.add(id);
+    console.log(id);
+
+    const currNode = transpose.get(id);
+
+    if (currNode !== undefined) {
+        currNode.neighbors.forEach((e: Edge) => {
+            const destNode = e.dest;
+            if (!visited.has(destNode.id)) {
+                DFSUtil(destNode.id, visited, transpose);
+            }
+        });
+    }
+};
 
 const getTranspose = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): Map<number, Node> => {
     const tempGraph: Map<number, Node> = new Map<number, Node>();
@@ -98,16 +120,23 @@ const getTranspose = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>
     return tempGraph;
 };
 
-const fillOrder = (n: Node, visited: Set<number>, stack: number[]): void => {
+const fillOrder = (n: Node, visited: Set<number>, stack: number[], animations: GraphAnimationData[]): void => {
     visited.add(n.id);
 
     n.neighbors.forEach((e: Edge) => {
         const destNode = e.dest;
         if (!visited.has(destNode.id)) {
-            fillOrder(destNode, visited, stack);
+            fillOrder(destNode, visited, stack, animations);
         }
     });
 
+    animations.push({
+        id: n.id,
+        type: "all",
+        color: "#7c94e4",
+        name: (nodeCount - stack.length).toString(),
+        edgeId: "",
+    });
     stack.push(n.id);
 };
 

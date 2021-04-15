@@ -147,6 +147,7 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
                 type: "all",
                 color: "#e4e4e4",
                 name: Math.floor((currWeight !== undefined) ? currWeight : temp.distance).toString(),
+                edgeId: "",
             });
 
             if (currNode !== undefined && currWeight !== undefined) {
@@ -164,6 +165,7 @@ const dijkstra = (srcId: number, nodes: Map<number, NodeData>, edges: Map<string
                                 type: "all",
                                 color: "#7c94e4",
                                 name: Math.floor(nextPossibleWeight).toString(),
+                                edgeId: "",
                             });
                             prioQ.insert({
                                 id: destId,

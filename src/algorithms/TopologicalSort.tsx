@@ -54,6 +54,7 @@ const topologicalSort = (nodes: Map<number, NodeData>, edges: Map<string, EdgeDa
                 type: "all",
                 color: "#7c94e4",
                 name: node.id.toString(),
+                edgeId: "",
             });
         }
     });
@@ -69,6 +70,7 @@ const topologicalSort = (nodes: Map<number, NodeData>, edges: Map<string, EdgeDa
                 type: "all",
                 color: "#e4e4e4",
                 name: sorted.length.toString(),
+                edgeId: "",
             });
 
             currNode.neighbors.forEach((e: Edge) => {
@@ -82,6 +84,7 @@ const topologicalSort = (nodes: Map<number, NodeData>, edges: Map<string, EdgeDa
                             type: "all",
                             color: "#7c94e4",
                             name: destNode.id.toString(),
+                            edgeId: "",
                         });
                         queue.push(destNode);
                     }
