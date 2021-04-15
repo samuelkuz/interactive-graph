@@ -93,7 +93,7 @@ const topologicalSort = (nodes: Map<number, NodeData>, edges: Map<string, EdgeDa
         }
     }
 
-    if (sorted.length == nodeCount) console.log("ABLE TO BE BUILT");
+    if (sorted.length !== nodeCount) console.log("ERROR: UNABLE TO BE FULLY BUILT, CYCLE DETECTED");
 
     return animations;
 }

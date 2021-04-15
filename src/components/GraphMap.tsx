@@ -41,7 +41,24 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
         window.addEventListener("keydown", handleMovement);
         window.addEventListener("click", handleClick);
 
-        handleReset();
+        // Data to start and toy around with
+        nodeMap.set(1, {id: 1, color: "#919191", name: "1", point: {x: 10, y: 10}, size: 10});
+        nodeMap.set(2, {id: 2, color: "#919191", name: "2", point: {x: 30, y: 30}, size: 10});
+        nodeMap.set(3, {id: 3, color: "#919191", name: "3", point: {x: 60, y: 30}, size: 10});
+        nodeMap.set(4, {id: 4, color: "#919191", name: "4", point: {x: 100, y: 40}, size: 10});
+        nodeMap.set(5, {id: 5, color: "#919191", name: "5", point: {x: 40, y: 100}, size: 10});
+        nodeMap.set(6, {id: 6, color: "#919191", name: "6", point: {x: 80, y: 75}, size: 10});
+        nodeMap.set(7, {id: 7, color: "#919191", name: "7", point: {x: 90, y: 100}, size: 10});
+
+        edgeMap.set("1:2", {srcId: 1, srcPoint: {x: 10, y: 10}, destId: 2, destPoint: {x: 30, y: 30}, weight: 28.284271247461902});
+        edgeMap.set("2:3", {srcId: 2, srcPoint: {x: 30, y: 30}, destId: 3, destPoint: {x: 60, y: 30}, weight: 30});
+        edgeMap.set("3:4", {srcId: 3, srcPoint: {x: 60, y: 30}, destId: 4, destPoint: {x: 100, y: 40}, weight: 41.23105625617661});
+        edgeMap.set("4:6", {srcId: 4, srcPoint: {x: 100, y: 40}, destId: 6, destPoint: {x: 80, y: 75}, weight: 40.311288741492746});
+        edgeMap.set("6:5", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 5, destPoint: {x: 40, y: 100}, weight: 47.16990566028302});
+        edgeMap.set("6:7", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 7, destPoint: {x: 90, y: 100}, weight: 26.92582403567252});
+        
+        setEdgeCounter(6);
+        setNodeCounter(7);
 
         return function cleanup() {
             window.removeEventListener("keydown", handleMovement);
@@ -65,7 +82,6 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                     }, animationSpeed);
                     break;
                 case "name":
-                    // Don't really need this case name/color usually changes together
                     setTimeout(() => {
                         const node = nodeMap.get(animation.id);
                         if (node === undefined) return;
@@ -77,7 +93,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                     setTimeout(() => {
                         transposeEdge(animation.edgeId);
                         setAnimations(tempAnimations);
-                    }, animationSpeed);
+                    }, animationSpeed / 2);
                     break;
                 case "all":
                     setTimeout(() => {
@@ -159,7 +175,6 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     
     const buildEdges = () => {
         const edgeObjs: JSX.Element[] = [];
-
         edgeMap.forEach((val: EdgeData, key: string) => {
             // Eventually calculate if it should be rendered or not
             edgeObjs.push(<Edge key={Math.random() * 10000} data={val} color={"#000"} editCallback={handleEditEdge}/>);
@@ -170,7 +185,6 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
 
     const buildNodes = () => {
         const nodeObjs: JSX.Element[] = [];
-
         nodeMap.forEach((val: NodeData, key: number) => {
             // Eventually calculate if it should be rendered or not
             nodeObjs.push(<GraphNode key={Math.random() * 10000} data={val} color={val.color} editCallback={handleEditNode}/>);
@@ -185,7 +199,7 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
                 <AlgorithmDropDown title={"Dijkstra's"} algorithmCallback={handleDijkstra}/>
                 <AlgorithmButton title={"Topological Sort"} callBack={handleTopologicalSort}/>
                 <AlgorithmButton title={"Kosaraju"} callBack={handleKosaraju}/>
-                <AlgorithmButton title={"Reset"} callBack={handleReset}/>
+                <AlgorithmButton title={"Reset ID's"} callBack={handleReset}/>
             </div>);
     };
 
@@ -377,26 +391,10 @@ const GraphMap: React.FC<GraphMapProps> = ({height, width}) => {
     };
 
     const handleReset = () => {
-        nodeMap.clear();
-        edgeMap.clear();
-
-        nodeMap.set(1, {id: 1, color: "#919191", name: "1", point: {x: 10, y: 10}, size: 10});
-        nodeMap.set(2, {id: 2, color: "#919191", name: "2", point: {x: 30, y: 30}, size: 10});
-        nodeMap.set(3, {id: 3, color: "#919191", name: "3", point: {x: 60, y: 30}, size: 10});
-        nodeMap.set(4, {id: 4, color: "#919191", name: "4", point: {x: 100, y: 40}, size: 10});
-        nodeMap.set(5, {id: 5, color: "#919191", name: "5", point: {x: 40, y: 100}, size: 10});
-        nodeMap.set(6, {id: 6, color: "#919191", name: "6", point: {x: 80, y: 75}, size: 10});
-        nodeMap.set(7, {id: 7, color: "#919191", name: "7", point: {x: 90, y: 100}, size: 10});
-
-        edgeMap.set("1:2", {srcId: 1, srcPoint: {x: 10, y: 10}, destId: 2, destPoint: {x: 30, y: 30}, weight: 28.284271247461902});
-        edgeMap.set("2:3", {srcId: 2, srcPoint: {x: 30, y: 30}, destId: 3, destPoint: {x: 60, y: 30}, weight: 30});
-        edgeMap.set("3:4", {srcId: 3, srcPoint: {x: 60, y: 30}, destId: 4, destPoint: {x: 100, y: 40}, weight: 41.23105625617661});
-        edgeMap.set("4:6", {srcId: 4, srcPoint: {x: 100, y: 40}, destId: 6, destPoint: {x: 80, y: 75}, weight: 40.311288741492746});
-        edgeMap.set("6:5", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 5, destPoint: {x: 40, y: 100}, weight: 47.16990566028302});
-        edgeMap.set("6:7", {srcId: 6, srcPoint: {x: 80, y: 75}, destId: 7, destPoint: {x: 90, y: 100}, weight: 26.92582403567252});
-        
-        setEdgeCounter(6);
-        setNodeCounter(7);
+        nodeMap.forEach((val: NodeData, key: number) => {
+            val.color = "#919191";
+            val.name = val.id.toString();
+        });
         setRenderCount(renderCount + 1);
     };
 

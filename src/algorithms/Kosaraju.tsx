@@ -71,6 +71,8 @@ const kosaraju = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>): G
         }
     }
 
+    resetEdges(edges, animations);
+
     return animations;
 }
 
@@ -95,6 +97,26 @@ const DFSUtil = (id: number,  visited: Set<number>, transpose: Map<number, Node>
             }
         });
     }
+};
+
+const fillOrder = (n: Node, visited: Set<number>, stack: number[], animations: GraphAnimationData[]): void => {
+    visited.add(n.id);
+
+    n.neighbors.forEach((e: Edge) => {
+        const destNode = e.dest;
+        if (!visited.has(destNode.id)) {
+            fillOrder(destNode, visited, stack, animations);
+        }
+    });
+
+    animations.push({
+        id: n.id,
+        type: "all",
+        color: "#7c94e4",
+        name: (nodeCount - stack.length).toString(),
+        edgeId: "",
+    });
+    stack.push(n.id);
 };
 
 const getTranspose = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>, animations: GraphAnimationData[]): Map<number, Node> => {
@@ -136,24 +158,17 @@ const getTranspose = (nodes: Map<number, NodeData>, edges: Map<string, EdgeData>
     return tempGraph;
 };
 
-const fillOrder = (n: Node, visited: Set<number>, stack: number[], animations: GraphAnimationData[]): void => {
-    visited.add(n.id);
-
-    n.neighbors.forEach((e: Edge) => {
-        const destNode = e.dest;
-        if (!visited.has(destNode.id)) {
-            fillOrder(destNode, visited, stack, animations);
-        }
+const resetEdges = (edges: Map<string, EdgeData>, animations: GraphAnimationData[]): void => {
+    edges.forEach((val: EdgeData, key: string) => {
+        const oldEdgeKey = `${val.destId}:${val.srcId}`;
+        animations.push({
+            id: 0,
+            type: "transpose",
+            color: "#000000",
+            name: "",
+            edgeId: oldEdgeKey,
+        });
     });
-
-    animations.push({
-        id: n.id,
-        type: "all",
-        color: "#7c94e4",
-        name: (nodeCount - stack.length).toString(),
-        edgeId: "",
-    });
-    stack.push(n.id);
 };
 
 export default kosaraju;
